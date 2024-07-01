@@ -1,39 +1,40 @@
-import test from "node:test";
 import puppeteer from "puppeteer-core";
 import { executablePath } from "puppeteer-core";
 
-run()
+// Change the URL 
+const URL = 'https://stackoverflow.com/';
 
-async function run() {
-    const browser = await puppeteer.launch({
+// Launching Browser
+const browser = await puppeteer.launch({
+    executablePath: executablePath('chrome'),
+});
 
-        executablePath: executablePath('chrome'),
-    });
+//creating new page
+const page = await browser.newPage();
 
-    const page = await browser.newPage();
+// browsing url 
+await page.goto(URL, {
+    waitUntil: 'networkidle2',
+});
 
-    await page.goto('https://google.com/', {
-        waitUntil: 'networkidle2',
-    });
+// Taking Height and Width of targeted URL
+const hgt = await page.evaluate(() => {
+    return document.body.scrollHeight;    
+})
+const wdt = await page.evaluate(() => {
+    return document.body.scrollWidth;
+})
 
-    await page.evaluate( () => {
-        const hgt = document.body.scrollHeight;
-        const wdt = document.body.scrollWidth;
-        
-    })
+// Setting Viewport of the browser window
+await page.setViewport({ width: wdt, height: hgt });
 
-    await page.setViewport({ width: wdt, height: hgt });
+//Taking Screenshot
+await page.screenshot({
+    path: 'screenshot/default.png',
+})
 
-
-
-    await page.screenshot({
-        path: 'google.png',
-    })
-
-    await browser.close()
+// Closing Browser
+await browser.close()
 
 
-}
-
-// 
 
